@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Item, SpreadsheetRow } from "@/types/spreadsheet";
-import { loadItems, addSheet, deleteSheet, addRow, updateRow, deleteRow } from "@/lib/storage";
+import { loadItems, addSheet, deleteSheet, renameSheet, addRow, updateRow, deleteRow } from "@/lib/storage";
 import { SpreadsheetTable } from "@/components/SpreadsheetTable";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,6 +13,8 @@ const SpreadsheetView = () => {
   const navigate = useNavigate();
   const [item, setItem] = useState<Item | null>(null);
   const [activeSheet, setActiveSheet] = useState<string>("");
+  const [editingSheet, setEditingSheet] = useState<string | null>(null);
+  const [editName, setEditName] = useState<string>("");
 
   useEffect(() => {
     const items = loadItems();
@@ -57,6 +59,18 @@ const SpreadsheetView = () => {
       }
       toast.success("Sheet deleted");
     }
+  };
+
+  const handleRenameSheet = (sheetId: string, newName: string) => {
+    if (!itemId || !newName.trim()) return;
+    renameSheet(itemId, sheetId, newName.trim());
+    const items = loadItems();
+    const updatedItem = items.find((i) => i.id === itemId);
+    if (updatedItem) {
+      setItem(updatedItem);
+      toast.success("Sheet renamed");
+    }
+    setEditingSheet(null);
   };
 
   const handleAddRow = (rowData: Omit<SpreadsheetRow, "id" | "balance">) => {
@@ -115,8 +129,34 @@ const SpreadsheetView = () => {
             <TabsList>
               {item.sheets.map((sheet) => (
                 <div key={sheet.id} className="relative group">
-                  <TabsTrigger value={sheet.id} className="pr-8">
-                    {sheet.name}
+                  <TabsTrigger 
+                    value={sheet.id} 
+                    className="pr-8"
+                    onDoubleClick={() => {
+                      setEditingSheet(sheet.id);
+                      setEditName(sheet.name);
+                    }}
+                  >
+                    {editingSheet === sheet.id ? (
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        onBlur={() => handleRenameSheet(sheet.id, editName)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleRenameSheet(sheet.id, editName);
+                          } else if (e.key === "Escape") {
+                            setEditingSheet(null);
+                          }
+                        }}
+                        className="bg-background text-foreground px-2 py-1 rounded border border-border w-24"
+                        autoFocus
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : (
+                      sheet.name
+                    )}
                   </TabsTrigger>
                   {item.sheets.length > 1 && (
                     <Button

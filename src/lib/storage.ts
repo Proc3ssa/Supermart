@@ -58,6 +58,18 @@ export const deleteSheet = (itemId: string, sheetId: string) => {
   saveItems(items);
 };
 
+export const renameSheet = (itemId: string, sheetId: string, newName: string) => {
+  const items = loadItems();
+  const item = items.find((i) => i.id === itemId);
+  if (!item) return;
+
+  const sheet = item.sheets.find((s) => s.id === sheetId);
+  if (!sheet) return;
+
+  sheet.name = newName;
+  saveItems(items);
+};
+
 export const addRow = (itemId: string, sheetId: string, row: Omit<SpreadsheetRow, "id" | "balance">): SpreadsheetRow | null => {
   const items = loadItems();
   const item = items.find((i) => i.id === itemId);
