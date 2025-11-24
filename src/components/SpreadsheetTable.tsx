@@ -2,6 +2,7 @@ import { useState } from "react";
 import { SpreadsheetRow } from "@/types/spreadsheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Trash2, Plus } from "lucide-react";
 
 interface SpreadsheetTableProps {
@@ -20,6 +21,7 @@ export const SpreadsheetTable = ({ rows, onAddRow, onUpdateRow, onDeleteRow }: S
     deliveryDate: "",
     driver: "",
   });
+  const [rowToDelete, setRowToDelete] = useState<string | null>(null);
 
   const handleAddRow = () => {
     if (newRow.description.trim()) {
@@ -33,6 +35,12 @@ export const SpreadsheetTable = ({ rows, onAddRow, onUpdateRow, onDeleteRow }: S
         driver: "",
       });
     }
+  };
+
+  const confirmDeleteRow = () => {
+    if (!rowToDelete) return;
+    onDeleteRow(rowToDelete);
+    setRowToDelete(null);
   };
 
   return (
@@ -107,7 +115,7 @@ export const SpreadsheetTable = ({ rows, onAddRow, onUpdateRow, onDeleteRow }: S
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onDeleteRow(row.id)}
+                    onClick={() => setRowToDelete(row.id)}
                     className="h-8 w-8 text-muted-foreground hover:text-destructive"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -182,6 +190,21 @@ export const SpreadsheetTable = ({ rows, onAddRow, onUpdateRow, onDeleteRow }: S
           </tbody>
         </table>
       </div>
+
+      <AlertDialog open={!!rowToDelete} onOpenChange={(open) => !open && setRowToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Row</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this row? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteRow}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
