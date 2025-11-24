@@ -6,6 +6,7 @@ import { SpreadsheetTable } from "@/components/SpreadsheetTable";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ArrowLeft, Plus, X, Download } from "lucide-react";
 import { toast } from "sonner";
 import { exportToCSV, exportToExcel } from "@/lib/export";
@@ -17,6 +18,7 @@ const SpreadsheetView = () => {
   const [activeSheet, setActiveSheet] = useState<string>("");
   const [editingSheet, setEditingSheet] = useState<string | null>(null);
   const [editName, setEditName] = useState<string>("");
+  const [sheetToDelete, setSheetToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     const items = loadItems();
@@ -45,22 +47,24 @@ const SpreadsheetView = () => {
     }
   };
 
-  const handleDeleteSheet = (sheetId: string) => {
-    if (!itemId || !item) return;
+  const confirmDeleteSheet = () => {
+    if (!itemId || !item || !sheetToDelete) return;
     if (item.sheets.length <= 1) {
       toast.error("Cannot delete the last sheet");
+      setSheetToDelete(null);
       return;
     }
-    deleteSheet(itemId, sheetId);
+    deleteSheet(itemId, sheetToDelete);
     const items = loadItems();
     const updatedItem = items.find((i) => i.id === itemId);
     if (updatedItem) {
       setItem(updatedItem);
-      if (activeSheet === sheetId) {
+      if (activeSheet === sheetToDelete) {
         setActiveSheet(updatedItem.sheets[0].id);
       }
       toast.success("Sheet deleted");
     }
+    setSheetToDelete(null);
   };
 
   const handleRenameSheet = (sheetId: string, newName: string) => {
@@ -182,7 +186,7 @@ const SpreadsheetView = () => {
                       className="absolute right-0 top-1/2 -translate-y-1/2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDeleteSheet(sheet.id);
+                        setSheetToDelete(sheet.id);
                       }}
                     >
                       <X className="w-3 h-3" />
@@ -225,6 +229,21 @@ const SpreadsheetView = () => {
           )}
         </Tabs>
       </div>
+
+      <AlertDialog open={!!sheetToDelete} onOpenChange={(open) => !open && setSheetToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Sheet</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this sheet? All data in this sheet will be permanently deleted. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteSheet}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
