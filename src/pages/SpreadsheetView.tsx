@@ -5,8 +5,10 @@ import { loadItems, addSheet, deleteSheet, renameSheet, addRow, updateRow, delet
 import { SpreadsheetTable } from "@/components/SpreadsheetTable";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Plus, X } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ArrowLeft, Plus, X, Download } from "lucide-react";
 import { toast } from "sonner";
+import { exportToCSV, exportToExcel } from "@/lib/export";
 
 const SpreadsheetView = () => {
   const { itemId } = useParams();
@@ -103,6 +105,21 @@ const SpreadsheetView = () => {
     }
   };
 
+  const handleExport = (format: "csv" | "excel") => {
+    if (!currentSheet) return;
+    
+    try {
+      if (format === "csv") {
+        exportToCSV(currentSheet.rows, currentSheet.name);
+      } else {
+        exportToExcel(currentSheet.rows, currentSheet.name);
+      }
+      toast.success(`Exported to ${format.toUpperCase()}`);
+    } catch (error) {
+      toast.error("Export failed");
+    }
+  };
+
   if (!item) return null;
 
   const currentSheet = item.sheets.find((s) => s.id === activeSheet);
@@ -178,6 +195,22 @@ const SpreadsheetView = () => {
               <Plus className="w-4 h-4" />
               Add Sheet
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Download className="w-4 h-4" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => handleExport("csv")}>
+                  Export as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport("excel")}>
+                  Export as Excel
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {currentSheet && (
