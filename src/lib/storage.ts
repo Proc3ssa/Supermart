@@ -1,10 +1,51 @@
 import { Item, Sheet, SpreadsheetRow } from "@/types/spreadsheet";
 
 const STORAGE_KEY = "spreadsheet-data";
+const OPEN_BALANCE_ID = "open-balance-row-id"; // Unique ID for the special row
+
+const createOpenBalanceRow = (): SpreadsheetRow => ({
+  id: OPEN_BALANCE_ID,
+  description: "Open Balance",
+  quantityIn: 600, // Default opening balance
+  quantityOut: 0,
+  balance: 600, // Initial balance is the quantityIn
+  date: new Date().toISOString().split('T')[0], // Set current date
+  deliveryDate: "", 
+  driver: "", // CORRECTED: Changed from 'driverts' to 'driver'
+});
+
+const calculateRunningBalance = (sheet: Sheet) => {
+  if (sheet.rows.length === 0) return;
+
+  // The first row should be the Open Balance row
+  if (sheet.rows[0].id === OPEN_BALANCE_ID) {
+    sheet.rows[0].balance = sheet.rows[0].quantityIn - sheet.rows[0].quantityOut;
+  } else {
+    // This handles a case where the open balance row might be missing,
+    // though the logic below should prevent it.
+    console.error("First row is not the Open Balance row");
+    return;
+  }
+
+  for (let i = 1; i < sheet.rows.length; i++) {
+    const previousBalance = sheet.rows[i - 1].balance;
+    const currentRow = sheet.rows[i];
+    currentRow.balance = previousBalance + (currentRow.quantityIn - currentRow.quantityOut);
+  }
+};
 
 export const loadItems = (): Item[] => {
   const stored = localStorage.getItem(STORAGE_KEY);
-  return stored ? JSON.parse(stored) : [];
+  const items: Item[] = stored ? JSON.parse(stored) : [];
+  
+  // Recalculate balances on load to ensure consistency, especially after an update
+  items.forEach(item => 
+    item.sheets.forEach(sheet => 
+      calculateRunningBalance(sheet)
+    )
+  );
+
+  return items;
 };
 
 export const saveItems = (items: Item[]) => {
@@ -20,7 +61,7 @@ export const addItem = (name: string): Item => {
       {
         id: crypto.randomUUID(),
         name: "Sheet 1",
-        rows: [],
+        rows: [createOpenBalanceRow()],
       },
     ],
   };
@@ -42,7 +83,7 @@ export const addSheet = (itemId: string): Sheet | null => {
   const newSheet: Sheet = {
     id: crypto.randomUUID(),
     name: `Sheet ${item.sheets.length + 1}`,
-    rows: [],
+    rows: [createOpenBalanceRow()],
   };
   item.sheets.push(newSheet);
   saveItems(items);
@@ -81,9 +122,13 @@ export const addRow = (itemId: string, sheetId: string, row: Omit<SpreadsheetRow
   const newRow: SpreadsheetRow = {
     ...row,
     id: crypto.randomUUID(),
-    balance: row.quantityIn - row.quantityOut,
+    balance: 0, // Placeholder, calculated below
   };
   sheet.rows.push(newRow);
+
+  // Recalculate all balances in the sheet after adding the row
+  calculateRunningBalance(sheet);
+
   saveItems(items);
   return newRow;
 };
@@ -100,7 +145,10 @@ export const updateRow = (itemId: string, sheetId: string, rowId: string, update
   if (!row) return;
 
   Object.assign(row, updates);
-  row.balance = row.quantityIn - row.quantityOut;
+
+  // Recalculate all balances in the sheet after updating the row
+  calculateRunningBalance(sheet);
+
   saveItems(items);
 };
 
@@ -113,5 +161,9 @@ export const deleteRow = (itemId: string, sheetId: string, rowId: string) => {
   if (!sheet) return;
 
   sheet.rows = sheet.rows.filter((r) => r.id !== rowId);
+
+  // Recalculate all balances in the sheet after deleting the row
+  calculateRunningBalance(sheet);
+  
   saveItems(items);
 };

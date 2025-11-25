@@ -10,9 +10,11 @@ interface SpreadsheetTableProps {
   onAddRow: (row: Omit<SpreadsheetRow, "id" | "balance">) => void;
   onUpdateRow: (rowId: string, updates: Partial<SpreadsheetRow>) => void;
   onDeleteRow: (rowId: string) => void;
+  // ADDED: Prop to disable deletion of the first row (the Open Balance row)
+  disableFirstRowDeletion: boolean;
 }
 
-export const SpreadsheetTable = ({ rows, onAddRow, onUpdateRow, onDeleteRow }: SpreadsheetTableProps) => {
+export const SpreadsheetTable = ({ rows, onAddRow, onUpdateRow, onDeleteRow, disableFirstRowDeletion }: SpreadsheetTableProps) => {
   const [newRow, setNewRow] = useState({
     date: "",
     description: "",
@@ -60,69 +62,87 @@ export const SpreadsheetTable = ({ rows, onAddRow, onUpdateRow, onDeleteRow }: S
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
-              <tr key={row.id} className="border-b border-table-border hover:bg-table-hover transition-colors">
-                <td className="px-4 py-3">
-                  <Input
-                    type="date"
-                    value={row.date}
-                    onChange={(e) => onUpdateRow(row.id, { date: e.target.value })}
-                    className="h-8 text-sm"
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <Input
-                    value={row.description}
-                    onChange={(e) => onUpdateRow(row.id, { description: e.target.value })}
-                    className="h-8 text-sm"
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <Input
-                    type="number"
-                    value={row.quantityIn}
-                    onChange={(e) => onUpdateRow(row.id, { quantityIn: Number(e.target.value) })}
-                    className="h-8 text-sm w-24"
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <Input
-                    type="number"
-                    value={row.quantityOut}
-                    onChange={(e) => onUpdateRow(row.id, { quantityOut: Number(e.target.value) })}
-                    className="h-8 text-sm w-24"
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <span className="text-sm font-medium text-foreground">{row.balance}</span>
-                </td>
-                <td className="px-4 py-3">
-                  <Input
-                    type="date"
-                    value={row.deliveryDate}
-                    onChange={(e) => onUpdateRow(row.id, { deliveryDate: e.target.value })}
-                    className="h-8 text-sm"
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <Input
-                    value={row.driver}
-                    onChange={(e) => onUpdateRow(row.id, { driver: e.target.value })}
-                    className="h-8 text-sm"
-                  />
-                </td>
-                <td className="px-4 py-3 text-center">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setRowToDelete(row.id)}
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </td>
-              </tr>
-            ))}
+            {rows.map((row, index) => {
+              // Check if deletion should be disabled for this row
+              const isDeleteDisabled = disableFirstRowDeletion && index === 0;
+
+              return (
+                <tr key={row.id} className="border-b border-table-border hover:bg-table-hover transition-colors">
+                  <td className="px-4 py-3">
+                    <Input
+                      type="date"
+                      value={row.date}
+                      onChange={(e) => onUpdateRow(row.id, { date: e.target.value })}
+                      className="h-8 text-sm"
+                      // Disable date input for Open Balance row
+                      disabled={index === 0 && row.description === "Open Balance"} 
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <Input
+                      value={row.description}
+                      onChange={(e) => onUpdateRow(row.id, { description: e.target.value })}
+                      className="h-8 text-sm"
+                      // Disable description input for Open Balance row
+                      disabled={index === 0 && row.description === "Open Balance"} 
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <Input
+                      type="number"
+                      value={row.quantityIn}
+                      onChange={(e) => onUpdateRow(row.id, { quantityIn: Number(e.target.value) })}
+                      className="h-8 text-sm w-24"
+                      // Allow Qty In update only for Open Balance row
+                      disabled={index !== 0 && row.description === "Open Balance"} 
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <Input
+                      type="number"
+                      value={row.quantityOut}
+                      onChange={(e) => onUpdateRow(row.id, { quantityOut: Number(e.target.value) })}
+                      className="h-8 text-sm w-24"
+                      // Disable Qty Out input for Open Balance row
+                      disabled={index === 0 && row.description === "Open Balance"} 
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="text-sm font-medium text-foreground">{row.balance}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Input
+                      type="date"
+                      value={row.deliveryDate}
+                      onChange={(e) => onUpdateRow(row.id, { deliveryDate: e.target.value })}
+                      className="h-8 text-sm"
+                      // Disable input for Open Balance row
+                      disabled={index === 0 && row.description === "Open Balance"} 
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <Input
+                      value={row.driver}
+                      onChange={(e) => onUpdateRow(row.id, { driver: e.target.value })}
+                      className="h-8 text-sm"
+                      // Disable input for Open Balance row
+                      disabled={index === 0 && row.description === "Open Balance"} 
+                    />
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => isDeleteDisabled ? null : setRowToDelete(row.id)}
+                      className={`h-8 w-8 text-muted-foreground ${isDeleteDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:text-destructive'}`}
+                      disabled={isDeleteDisabled}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </td>
+                </tr>
+              );
+            })}
             <tr className="bg-muted/50">
               <td className="px-4 py-3">
                 <Input
