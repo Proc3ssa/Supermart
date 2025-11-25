@@ -244,6 +244,9 @@ const SpreadsheetView = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <p className="mt-10 text-center text-sm text-muted-foreground">
+        By <a href="tel:+233553226020" className="font-medium text-primary hover:underline" aria-label="Call ProcessorCodes">ProcessorCodes</a> &copy; 2025
+      </p>
     </div>
   );
 };
