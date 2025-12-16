@@ -1,6 +1,8 @@
 # Supermart Inventory App
 
 A modern store inventory management application built with React. Manage your inventory with an intuitive spreadsheet-like interface that's easier to use than Excel, with data stored locally in your browser.
+<img width="1278" height="588" alt="download" src="https://github.com/user-attachments/assets/af5344ed-3726-4c9c-abe0-4ff5ccce060e" />
+<img width="1275" height="533" alt="download" src="https://github.com/user-attachments/assets/08030b58-7b35-453a-a468-fa6fae80c662" />
 
 ## Features
 
@@ -58,15 +60,15 @@ The production-ready files will be in the `dist` directory.
 ### Using Docker Hub
 
 ```bash
-docker pull proc3sa/supermart:1.0.0
-docker run -d -p 8080:8080 proc3sa/supermart:1.0.0
+docker pull proc3sa/supermart-app:1.0.0
+docker run -d -p 8080:8080 proc3sa/supermart-app:1.0.0
 ```
 
 ### Using GitHub Container Registry
 
 ```bash
-docker pull ghcr.io/proc3ssa/supermart:1.0.0
-docker run -d -p 8080:8080 ghcr.io/proc3ssa/supermart:1.0.0
+docker pull ghcr.io/proc3ssa/supermart-app:1.0.0
+docker run -d -p 8080:8080 ghcr.io/proc3ssa/supermart-app:1.0.0
 ```
 
 ### Build Docker Image Locally
