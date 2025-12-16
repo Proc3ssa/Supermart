@@ -1,73 +1,99 @@
-# Welcome to your Lovable project
+# Supermart Inventory App
 
-## Project info
+A modern store inventory management application built with React. Manage your inventory with an intuitive spreadsheet-like interface that's easier to use than Excel, with data stored locally in your browser.
 
-**URL**: https://lovable.dev/projects/2733a13e-4c19-4f8d-85c6-0b7eb2a85622
+## Features
 
-## How can I edit this code?
+- **Spreadsheet Interface** - Familiar grid layout for easy data entry and viewing
+- **Local Storage** - All data stored in your browser, no server required
+- **Export Capabilities** - Download your inventory as CSV or Excel files
+- **Fast & Lightweight** - Quick loading times and responsive interface
+- **No Installation Required** - Runs entirely in your browser
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- React 18
+- Vite
+- TypeScript
+- Tailwind CSS
+- shadcn/ui components
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2733a13e-4c19-4f8d-85c6-0b7eb2a85622) and start prompting.
+## Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
 
-**Use your preferred IDE**
+- Node.js 18 or higher
+- npm or yarn
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Local Development
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. Clone the repository
+```bash
+git clone https://github.com/proc3ssa/supermart.git
+cd supermart
+```
 
-Follow these steps:
+2. Install dependencies
+```bash
+npm install
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. Start the development server
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. Open your browser and navigate to `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Build for Production
 
-**Use GitHub Codespaces**
+```bash
+npm run build
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+The production-ready files will be in the `dist` directory.
 
-## What technologies are used for this project?
+## Docker Deployment
 
-This project is built with:
+### Using Docker Hub
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```bash
+docker pull proc3sa/supermart:1.0.0
+docker run -d -p 8080:8080 proc3sa/supermart:1.0.0
+```
 
-## How can I deploy this project?
+### Using GitHub Container Registry
 
-Simply open [Lovable](https://lovable.dev/projects/2733a13e-4c19-4f8d-85c6-0b7eb2a85622) and click on Share -> Publish.
+```bash
+docker pull ghcr.io/proc3ssa/supermart:1.0.0
+docker run -d -p 8080:8080 ghcr.io/proc3ssa/supermart:1.0.0
+```
 
-## Can I connect a custom domain to my Lovable project?
+### Build Docker Image Locally
 
-Yes, you can!
+```bash
+make build
+make run
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Access the app at `http://localhost:8080`
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Usage
+
+1. **Add Items** - Click the add button to create new inventory entries
+2. **Edit Data** - Click any cell to edit product information
+3. **Search & Filter** - Use the search bar to find specific items
+4. **Export Data** - Click the export button and choose CSV or Excel format
+5. **Data Persistence** - Your data is automatically saved to browser local storage
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT License
+
+## Contact
+
+For questions or support, please open an issue on GitHub.
