@@ -91,12 +91,16 @@ const SpreadsheetView = () => {
 
   const handleUpdateRow = (rowId: string, updates: Partial<SpreadsheetRow>) => {
     if (!itemId || !activeSheet) return;
-    // Prevent updating the Open Balance row (which has a hardcoded ID)
-    if (rowId === "open-balance-row-id") {
-      toast.error("Cannot directly update the Open Balance row. Use the 'Quantity In' field.");
-      return;
+    
+    // Check if the description is being changed for the Open Balance row
+    if (rowId === "open-balance-row-id" && updates.description !== undefined && updates.description !== "Open Balance") {
+      // Allow description change for the opening balance row
+      // No toast error needed, just proceed with the update
     }
+    
+    // Proceed with the update for all fields, including date and quantityIn
     updateRow(itemId, activeSheet, rowId, updates);
+    
     const items = loadItems();
     const updatedItem = items.find((i) => i.id === itemId);
     if (updatedItem) {
@@ -234,7 +238,7 @@ const SpreadsheetView = () => {
                 onAddRow={handleAddRow}
                 onUpdateRow={handleUpdateRow}
                 onDeleteRow={handleDeleteRow}
-                // Pass a flag to the table component to prevent deleting the first row visually
+                // We keep this to ensure the delete button is disabled
                 disableFirstRowDeletion={true}
               />
             </TabsContent>

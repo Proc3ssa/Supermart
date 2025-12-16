@@ -10,7 +10,7 @@ interface SpreadsheetTableProps {
   onAddRow: (row: Omit<SpreadsheetRow, "id" | "balance">) => void;
   onUpdateRow: (rowId: string, updates: Partial<SpreadsheetRow>) => void;
   onDeleteRow: (rowId: string) => void;
-  // ADDED: Prop to disable deletion of the first row (the Open Balance row)
+  // Prop to disable deletion of the first row (the Open Balance row)
   disableFirstRowDeletion: boolean;
 }
 
@@ -74,8 +74,7 @@ export const SpreadsheetTable = ({ rows, onAddRow, onUpdateRow, onDeleteRow, dis
                       value={row.date}
                       onChange={(e) => onUpdateRow(row.id, { date: e.target.value })}
                       className="h-8 text-sm"
-                      // Disable date input for Open Balance row
-                      disabled={index === 0 && row.description === "Open Balance"} 
+                      // REMOVED: disabled={index === 0 && row.description === "Open Balance"}
                     />
                   </td>
                   <td className="px-4 py-3">
@@ -83,8 +82,7 @@ export const SpreadsheetTable = ({ rows, onAddRow, onUpdateRow, onDeleteRow, dis
                       value={row.description}
                       onChange={(e) => onUpdateRow(row.id, { description: e.target.value })}
                       className="h-8 text-sm"
-                      // Disable description input for Open Balance row
-                      disabled={index === 0 && row.description === "Open Balance"} 
+                      // REMOVED: disabled={index === 0 && row.description === "Open Balance"}
                     />
                   </td>
                   <td className="px-4 py-3">
@@ -93,8 +91,7 @@ export const SpreadsheetTable = ({ rows, onAddRow, onUpdateRow, onDeleteRow, dis
                       value={row.quantityIn}
                       onChange={(e) => onUpdateRow(row.id, { quantityIn: Number(e.target.value) })}
                       className="h-8 text-sm w-24"
-                      // Allow Qty In update only for Open Balance row
-                      disabled={index !== 0 && row.description === "Open Balance"} 
+                      // REMOVED: disabled={index !== 0 && row.description === "Open Balance"}
                     />
                   </td>
                   <td className="px-4 py-3">
@@ -103,8 +100,7 @@ export const SpreadsheetTable = ({ rows, onAddRow, onUpdateRow, onDeleteRow, dis
                       value={row.quantityOut}
                       onChange={(e) => onUpdateRow(row.id, { quantityOut: Number(e.target.value) })}
                       className="h-8 text-sm w-24"
-                      // Disable Qty Out input for Open Balance row
-                      disabled={index === 0 && row.description === "Open Balance"} 
+                      // REMOVED: disabled={index === 0 && row.description === "Open Balance"}
                     />
                   </td>
                   <td className="px-4 py-3">
@@ -116,8 +112,7 @@ export const SpreadsheetTable = ({ rows, onAddRow, onUpdateRow, onDeleteRow, dis
                       value={row.deliveryDate}
                       onChange={(e) => onUpdateRow(row.id, { deliveryDate: e.target.value })}
                       className="h-8 text-sm"
-                      // Disable input for Open Balance row
-                      disabled={index === 0 && row.description === "Open Balance"} 
+                      // REMOVED: disabled={index === 0 && row.description === "Open Balance"}
                     />
                   </td>
                   <td className="px-4 py-3">
@@ -125,8 +120,7 @@ export const SpreadsheetTable = ({ rows, onAddRow, onUpdateRow, onDeleteRow, dis
                       value={row.driver}
                       onChange={(e) => onUpdateRow(row.id, { driver: e.target.value })}
                       className="h-8 text-sm"
-                      // Disable input for Open Balance row
-                      disabled={index === 0 && row.description === "Open Balance"} 
+                      // REMOVED: disabled={index === 0 && row.description === "Open Balance"}
                     />
                   </td>
                   <td className="px-4 py-3 text-center">
